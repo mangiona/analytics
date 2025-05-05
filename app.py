@@ -81,9 +81,53 @@ if uploaded_file:
             col1, col2 = st.columns(2)
 
             with col1:
+                state_names = {
+                    1: "Utenti al carrello",
+                    2: "Preordini",
+                    4: "Ordini consegnati"
+                }
+                
+                # Conta le occorrenze di ciascuno stato
                 pie_df = df['stateId'].value_counts().reset_index()
                 pie_df.columns = ['stateId', 'count']
-                fig_pie = px.pie(pie_df, names='stateId', values='count', title="Distribuzione Stati Ordine")
+                
+                # Converti gli ID degli stati nei nomi descrittivi
+                pie_df['state_name'] = pie_df['stateId'].map(state_names)
+                
+                # Crea il grafico a torta migliorato
+                fig_pie = px.pie(
+                    pie_df, 
+                    names='state_name', 
+                    values='count', 
+                    title="Distribuzione Stati Ordine (Stato Più Avanzato per Utente)",
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+                
+                # Migliora l'aspetto del grafico
+                fig_pie.update_layout(
+                    font=dict(family="Arial, sans-serif", size=12),
+                    title_font=dict(size=16, family="Arial, sans-serif"),
+                    title_x=0.5,  # Centra il titolo
+                    legend_title="Stato Ordine",
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=-0.2,
+                        xanchor="center",
+                        x=0.5
+                    )
+                )
+                
+                # Aggiungi percentuali alle etichette
+                fig_pie.update_traces(
+                    textposition='inside', 
+                    textinfo='percent+label',
+                    hoverinfo='label+percent+value',
+                    pull=[0.03, 0.03, 0.03],  # Separa leggermente le fette per maggiore visibilità
+                    marker=dict(line=dict(color='white', width=2))  # Bordo bianco per separare le fette
+                )
+                
+                # Visualizza il grafico
                 st.plotly_chart(fig_pie, use_container_width=True)
 
             with col2:
