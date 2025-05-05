@@ -3,13 +3,14 @@ import pandas as pd
 import plotly.express as px
 
 st.set_page_config(page_title="Order Analytics", layout="wide")
-st.title("📦 Order Analytics Dashboard")
 
 # 🔠 Mappa eventId → Nome evento (modificabile liberamente)
 event_names = {
     2: "Rimini Marathon",
     5: "Champions Pulcini",
     6: "Nico Run",
+    7: "Test FotoRavenna",
+    8: "Test Endu",
     9: "Nova Eroica Prosecco Hills",
     10: "Cinquanta KM Romagna",
     11: "Bulls Game",
@@ -17,10 +18,12 @@ event_names = {
     13: "Triathlon Caorle",
     14: "GF Squali",
     15: "Nove Colli",
-    16: "Oceanman Cattolica"
+    16: "Oceanman Cattolica",
+    17: "Sviluppo R&D"
 }
 
-uploaded_file = st.file_uploader("Carica un file CSV", type="csv")
+st.sidebar.header("🔍 Filtro dati")
+uploaded_file = st.sidebar.file_uploader("Carica file CSV degli ordini", type=["csv"])
 
 if uploaded_file:
     df_raw = pd.read_csv(uploaded_file)
@@ -33,16 +36,24 @@ if uploaded_file:
 
         # Filtri evento
         with st.sidebar:
-            st.header("🎛️ Filtri")
+            st.header("🎛️ Filtro Eventi")
             selected_events = st.multiselect(
-                "Seleziona Eventi",
+                "📍 Seleziona uno o più eventi:",
                 options=sorted(df_raw['eventName'].unique()),
                 default=None
             )
+            st.markdown("—" * 15)
+            st.caption("💡 Suggerimento: seleziona un solo evento per una vista dedicata.")
 
         df = df_raw.copy()
         if selected_events:
             df = df[df['eventName'].isin(selected_events)]
+
+        
+        if selected_events and len(selected_events) == 1:
+            st.title(f"📦 {selected_events[0]} - Orders")
+        else:
+            st.title("📦 Order Analytics Dashboard")
 
         # Separazione confermati / abbandonati
         confirmed = df[df['stateId'] == 4]
@@ -55,13 +66,17 @@ if uploaded_file:
             total_amount = confirmed['amount'].sum()
             avg_amount = confirmed['amount'].mean()
 
-            st.markdown("### ✅ Statistiche Ordini Confermati")
+            st.markdown("## ✅ Panoramica Ordini Confermati")
             col1, col2, col3 = st.columns(3)
-            col1.metric("Ordini Confermati", total_orders)
-            col2.metric("Totale Confermato", f"{total_amount:.2f}€")
-            col3.metric("Media Ordine", f"{avg_amount:.2f}€")
+            with col1:
+                st.metric(label="🧾 Ordini Confermati", value=total_orders)
+            with col2:
+                st.metric(label="💰 Totale", value=f"{total_amount:.2f}€")
+            with col3:
+                st.metric(label="📊 Media Ordine", value=f"{avg_amount:.2f}€")
 
             st.markdown("### 📈 Grafici Ordini (tutti gli stati)")
+            st.markdown("---")
 
             col1, col2 = st.columns(2)
 
@@ -116,6 +131,10 @@ if uploaded_file:
                 st.plotly_chart(fig_hist, use_container_width=True)
 
             st.markdown("### 📋 Dettaglio Ordini Confermati")
-            st.dataframe(confirmed.drop(columns=['paymentResult'], errors='ignore'))
+            st.dataframe(
+                confirmed.drop(columns=['paymentResult'], errors='ignore'),
+                use_container_width=True,
+                height=400
+            )
 else:
     st.info("Carica un file CSV per iniziare.")
