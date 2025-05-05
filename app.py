@@ -126,15 +126,43 @@ if uploaded_file:
                     x='amount',
                     color='eventName',
                     nbins=30,
-                    title="Distribuzione Importi Confermati"
+                    title="Distribuzione degli Importi per Ordini Confermati",
+                    labels={
+                        'amount': 'Importo (€)',
+                        'eventName': 'Tipo di Evento',
+                        'count': 'Numero di Ordini'
+                    },
+                    opacity=0.8,
+                    barmode='overlay'  # Per una migliore visualizzazione quando ci sono più categorie
                 )
+                
+                # Miglioramento dell'aspetto grafico
+                fig_hist.update_layout(
+                    xaxis_title_font=dict(size=14),
+                    yaxis_title_font=dict(size=14),
+                    yaxis_title="Numero di Ordini",
+                    legend_title="Tipo di Evento",
+                    font=dict(family="Arial, sans-serif", size=12),
+                    title_font=dict(size=16, family="Arial, sans-serif"),
+                    title_x=0.5,  # Centra il titolo
+                    bargap=0.05   # Riduce lo spazio tra le barre
+                )
+                
+                # Aggiungi linee di griglia per una migliore leggibilità
+                fig_hist.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor='lightgray')
+                fig_hist.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor='lightgray')
+                
+                # Formattazione degli assi per migliorare la leggibilità
+                fig_hist.update_xaxes(tickprefix="€", tickformat=",.0f")
+                
+                # Visualizzazione del grafico
                 st.plotly_chart(fig_hist, use_container_width=True)
 
             st.markdown("### 📋 Dettaglio Ordini Confermati")
             st.dataframe(
-                confirmed.drop(columns=['paymentResult'], errors='ignore'),
+                confirmed.drop(columns=['paymentResult','dateSaveUrl','userId','datePayment'], errors='ignore'),
                 use_container_width=True,
-                height=400
+                height=500
             )
 else:
     st.info("Carica un file CSV per iniziare.")
