@@ -67,8 +67,7 @@ if uploaded_file:
             st.title("📦 Order Analytics Dashboard")
 
         # Separazione confermati / abbandonati
-        confirmed = df[df['stateId'] == 4]
-        abandoned = df[df['stateId'] != 4]
+        confirmed = df[df['stateId'] != 1]
         cart_users = df[df['stateId'] == 1]
 
         if confirmed.empty:
