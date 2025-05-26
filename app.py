@@ -263,13 +263,14 @@ if uploaded_file:
             with col3:
                 st.markdown("### 📈 Analisi per Evento")
 
-                title_col, select_col = st.columns([3, 1])
+                title_col, select_col = st.columns([0.7, 0.3])
                 with title_col:
                     st.markdown("#### Metrica")
                 with select_col:
                     metric_choice = st.selectbox(
                         "",
                         ["Spesa Media", "Valore Utente"],
+                        index=0,        
                         label_visibility="collapsed"
                     )
             
