@@ -262,11 +262,16 @@ if uploaded_file:
             
             with col3:
                 st.markdown("### 📈 Analisi per Evento")
-            
-                metric_choice = st.selectbox(
-                    "Scegli la metrica da visualizzare:",
-                    ["Spesa Media", "Valore Utente"]
-                )
+
+                title_col, select_col = st.columns([3, 1])
+                with title_col:
+                    st.markdown("#### Metrica")
+                with select_col:
+                    metric_choice = st.selectbox(
+                        "",
+                        ["Spesa Media", "Valore Utente"],
+                        label_visibility="collapsed"
+                    )
             
                 if metric_choice == "Spesa Media":
                     metric_df = confirmed.groupby('eventName')['amount'].mean().reset_index()
@@ -295,7 +300,6 @@ if uploaded_file:
                     color='eventName'
                 )
                 st.plotly_chart(fig_avg, use_container_width=True)
-
 
             with col4:
                 st.markdown("### 🍰 Distribuzione Acquisti per Prezzo")
