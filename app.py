@@ -261,21 +261,44 @@ if uploaded_file:
             col3, col4 = st.columns([1, 1])
             
             with col3:
-                st.markdown("### 📈 Spesa Media per Evento")
-                avg_by_event = confirmed.groupby('eventName')['amount'].mean().reset_index()
+                st.markdown("### 📈 Analisi per Evento")
+            
+                # Selettore per la metrica
+                metrica = st.selectbox(
+                    "Seleziona la metrica da visualizzare",
+                    options=["Spesa Media (€)", "Valore Utente (€)"]
+                )
+            
+                if metrica == "Spesa Media (€)":
+                    df_plot = confirmed.groupby('eventName')['amount'].mean().reset_index()
+                    y_val = 'amount'
+                    titolo = "Media Ordini Confermati per Evento"
+                    etichetta_y = "Spesa Media (€)"
+                else:
+                    # Calcolo del Valore Utente per evento: somma / utenti unici
+                    total_amount_per_event = confirmed.groupby('eventName')['amount'].sum()
+                    unique_users_per_event = confirmed.groupby('eventName')['userId'].nunique()
+                    user_value_per_event = (total_amount_per_event / unique_users_per_event).reset_index()
+                    user_value_per_event.columns = ['eventName', 'user_value']
+            
+                    df_plot = user_value_per_event
+                    y_val = 'user_value'
+                    titolo = "Valore Utente per Evento"
+                    etichetta_y = "Valore Utente (€)"
+            
                 fig_avg = px.bar(
-                    avg_by_event,
+                    df_plot,
                     x='eventName',
-                    y='amount',
-                    title="Media Ordini Confermati per Evento",
+                    y=y_val,
+                    title=titolo,
                     labels={
                         'eventName': 'Evento',
-                        'amount': 'Spesa Media (€)'
+                        y_val: etichetta_y
                     },
                     color='eventName'
                 )
                 st.plotly_chart(fig_avg, use_container_width=True)
-            
+
             with col4:
                 st.markdown("### 🍰 Distribuzione Acquisti per Prezzo")
                 
