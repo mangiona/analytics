@@ -10,8 +10,8 @@ st.set_page_config(page_title="Order Analytics", layout="wide")
 event_names = {
     2: "Rimini Marathon",
     5: "Champions Pulcini",
-    9: "Nova Eroica Prosecco Hills",
-    10: "Cinquanta KM Romagna",
+    9: "Nova Eroica",
+    10: "50KM Romagna",
     11: "Bulls Game",
     13: "Triathlon Caorle",
     14: "GF Squali",
