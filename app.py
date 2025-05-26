@@ -10,18 +10,15 @@ st.set_page_config(page_title="Order Analytics", layout="wide")
 event_names = {
     2: "Rimini Marathon",
     5: "Champions Pulcini",
-    6: "Nico Run",
     7: "Test FotoRavenna",
     8: "Test Endu",
     9: "Nova Eroica Prosecco Hills",
     10: "Cinquanta KM Romagna",
     11: "Bulls Game",
-    12: "Colle Marathon",
     13: "Triathlon Caorle",
     14: "GF Squali",
     15: "Nove Colli",
-    16: "Oceanman Cattolica",
-    17: "Sviluppo R&D"
+    16: "Oceanman Cattolica"
 }
 
 st.sidebar.header("🔍 Filtro dati")
