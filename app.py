@@ -279,17 +279,14 @@ if uploaded_file:
                     metric_df.columns = ['eventName', 'value']
                     y_label = "Spesa Media (€)"
                     title = "Media ordini confermati per evento"
-                elif selected_metric == "Valore utente":
-                    event_totals = confirmed.groupby('eventName').agg({
-                        'amount': 'sum',
-                        'userId': pd.Series.nunique
-                    }).reset_index()
-                    event_totals['user_value'] = event_totals['amount'] / event_totals['userId']
-                    avg_by_event = event_totals[['eventName', 'user_value']]
-                    y_value = 'user_value'
-                    y_label = 'Valore Utente (€)'
-                    title = "Valore utente medio per evento"
-            
+                elif metric_choice == "Valore utente":
+                    event_totals = confirmed.groupby('eventName')['amount'].sum().reset_index()
+                    event_users = df_searches_filtered.groupby('eventName')['unique_users_count'].sum().reset_index()
+                    metric_df = pd.merge(event_totals, event_users, on='eventName', how='left')
+                    metric_df['value'] = metric_df['amount'] / metric_df['unique_users_count']
+                    metric_df = metric_df[['eventName', 'value']]
+                    y_label = "Valore Utente (€)"
+                    title = "Valore Utente per Evento"
                 else:  # Incasso Totale
                     total_by_event = confirmed.groupby('eventName')['amount'].sum().reset_index()
                     avg_by_event = total_by_event
