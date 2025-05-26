@@ -263,33 +263,34 @@ if uploaded_file:
             with col3:
                 st.markdown("### 📈 Analisi per Evento")
             
-                # Aggiungi il selettore per la metrica
-                metric_to_plot = st.selectbox(
-                    "Seleziona la metrica da visualizzare:",
-                    options=["Spesa Media", "Valore Utente"]
+                metric_choice = st.selectbox(
+                    "Scegli la metrica da visualizzare:",
+                    ["Spesa Media", "Valore Utente"]
                 )
             
-                if metric_to_plot == "Spesa Media":
-                    avg_by_event = confirmed.groupby('eventName')['amount'].mean().reset_index()
-                    y_col = 'amount'
-                    title = "Media Ordini Confermati per Evento"
+                if metric_choice == "Spesa Media":
+                    metric_df = confirmed.groupby('eventName')['amount'].mean().reset_index()
+                    metric_df.columns = ['eventName', 'value']
                     y_label = "Spesa Media (€)"
+                    title = "Media Ordini Confermati per Evento"
                 else:
-                    avg_by_event = confirmed.groupby('eventName').apply(
-                        lambda x: x['amount'].sum() / x['unique_users_count'].sum() if x['unique_users_count'].sum() > 0 else 0
-                    ).reset_index(name='user_value')
-                    y_col = 'user_value'
-                    title = "Valore Utente per Evento"
+                    # Valore Utente: totale incassato per evento / utenti unici per evento
+                    event_totals = confirmed.groupby('eventName')['amount'].sum().reset_index()
+                    event_users = df_searches_filtered.groupby('eventName')['unique_users_count'].sum().reset_index()
+                    metric_df = pd.merge(event_totals, event_users, on='eventName', how='left')
+                    metric_df['value'] = metric_df['amount'] / metric_df['unique_users_count']
+                    metric_df = metric_df[['eventName', 'value']]
                     y_label = "Valore Utente (€)"
+                    title = "Valore Utente per Evento"
             
                 fig_avg = px.bar(
-                    avg_by_event,
+                    metric_df,
                     x='eventName',
-                    y=y_col,
+                    y='value',
                     title=title,
                     labels={
                         'eventName': 'Evento',
-                        y_col: y_label
+                        'value': y_label
                     },
                     color='eventName'
                 )
