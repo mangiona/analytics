@@ -261,49 +261,43 @@ if uploaded_file:
             col3, col4 = st.columns([1, 1])
             
             with col3:
-                # Layout orizzontale compatto per titolo + selectbox
-                col3a, col3b = st.columns([0.7, 0.3])
+                st.markdown("### 📈 Analisi per Evento")
                 
-                with col3a:
-                    st.markdown("### 📈 Spesa per Evento")
-                with col3b:
-                    metrica = st.selectbox(
-                        "",  # Nessuna etichetta per mantenerla compatta
-                        options=["Spesa Media (€)", "Valore Utente (€)"],
-                        index=0,
-                        label_visibility="collapsed"
-                    )
-            
-                if metrica == "Spesa Media (€)":
-                    df_plot = confirmed.groupby('eventName')['amount'].mean().reset_index()
-                    y_val = 'amount'
-                    titolo = "Media Ordini Confermati per Evento"
-                    etichetta_y = "Spesa Media (€)"
-                else:
-                    # Calcolo valore utente per evento = somma / utenti unici
-                    total_amount_per_event = confirmed.groupby('eventName')['amount'].sum()
-                    unique_users_per_event = confirmed.groupby('eventName')['userId'].nunique()
-                    user_value_per_event = (total_amount_per_event / unique_users_per_event).reset_index()
-                    user_value_per_event.columns = ['eventName', 'user_value']
+                # Selettore per la metrica da visualizzare
+                metric_to_plot = st.selectbox("Seleziona la metrica da visualizzare:", ["Spesa Media", "Valore Utente"])
+                
+                # Calcolo dei dati in base alla selezione
+                if metric_to_plot == "Spesa Media":
+                    data_plot = confirmed.groupby('eventName')['amount'].mean().reset_index()
+                    y_value = 'amount'
+                    title = "Media Ordini Confermati per Evento"
+                    y_label = "Spesa Media (€)"
+                else:  # Valore Utente
+                    # Calcolo del valore utente per evento
+                    user_value_by_event = confirmed.groupby('eventName').apply(
+                        lambda df: df['amount'].sum() / df['user_id'].nunique() if df['user_id'].nunique() > 0 else 0
+                    ).reset_index(name='user_value')
                     
-                    df_plot = user_value_per_event
-                    y_val = 'user_value'
-                    titolo = "Valore Utente per Evento"
-                    etichetta_y = "Valore Utente (€)"
+                    data_plot = user_value_by_event
+                    y_value = 'user_value'
+                    title = "Valore Utente per Evento"
+                    y_label = "Valore Utente (€)"
             
-                # Plot
-                fig_avg = px.bar(
-                    df_plot,
+                # Grafico dinamico
+                fig_event = px.bar(
+                    data_plot,
                     x='eventName',
-                    y=y_val,
-                    title=titolo,
+                    y=y_value,
+                    title=title,
                     labels={
                         'eventName': 'Evento',
-                        y_val: etichetta_y
+                        y_value: y_label
                     },
                     color='eventName'
                 )
-                st.plotly_chart(fig_avg, use_container_width=True)
+                
+                st.plotly_chart(fig_event, use_container_width=True)
+
 
             with col4:
                 st.markdown("### 🍰 Distribuzione Acquisti per Prezzo")
