@@ -10,8 +10,6 @@ st.set_page_config(page_title="Order Analytics", layout="wide")
 event_names = {
     2: "Rimini Marathon",
     5: "Champions Pulcini",
-    7: "Test FotoRavenna",
-    8: "Test Endu",
     9: "Nova Eroica Prosecco Hills",
     10: "Cinquanta KM Romagna",
     11: "Bulls Game",
