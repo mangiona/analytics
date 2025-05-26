@@ -40,7 +40,7 @@ if uploaded_file:
 
         # Filtri evento
         with st.sidebar:
-            st.header("🎛️ Filtro Eventi")
+            st.header("🎛️ Filtro eventi")
             selected_events = st.multiselect(
                 "📍 Seleziona uno o più eventi:",
                 options=sorted(df_orders['eventName'].unique()),
@@ -72,20 +72,20 @@ if uploaded_file:
             total_amount = confirmed['amount'].sum()
             avg_amount = confirmed['amount'].mean()
 
-            st.markdown("## ✅ Panoramica Ordini Confermati")
+            st.markdown("## ✅ Panoramica ordini confermati")
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric(label="🧾 Ordini Confermati", value=total_orders)
+                st.metric(label="🧾 Ordini confermati", value=total_orders)
             with col2:
                 st.metric(label="💰 Totale", value=f"{total_amount:.2f}€")
             with col3:
-                st.metric(label="📊 Media Ordine", value=f"{avg_amount:.2f}€")
+                st.metric(label="📊 Media ordine", value=f"{avg_amount:.2f}€")
 
             # Aggiunta spaziatura
             st.markdown("<br><br>", unsafe_allow_html=True)
             
             # Grafico a grandezza massima per andamento giornaliero acquisti
-            st.markdown("## 📈 Andamento Giornaliero Acquisti")
+            st.markdown("## 📈 Andamento giornaliero acquisti")
             
             confirmed['date'] = pd.to_datetime(confirmed['datePayment'], errors='coerce').dt.date
             date_df = confirmed.dropna(subset=['date'])
@@ -104,7 +104,7 @@ if uploaded_file:
                     amount_by_date,
                     x='date',
                     y='amount',
-                    title="Andamento Giornaliero Acquisti",
+                    title="Andamento giornaliero acquisti",
                     labels={
                         'date': 'Giorni',
                         'amount': 'Acquisti (€)'
@@ -124,7 +124,7 @@ if uploaded_file:
                     x='date',
                     y='amount',
                     color='eventName',
-                    title="Andamento Giornaliero Acquisti",
+                    title="Andamento giornaliero acquisti",
                     labels={
                         'date': 'Giorni',
                         'amount': 'Acquisti (€)',
@@ -148,7 +148,7 @@ if uploaded_file:
             col1, col2 = st.columns([1, 1])
             
             with col1:
-                st.markdown("### 📊 Analisi Pareto")
+                st.markdown("### 📊 Analisi pareto")
                 
                 # Recupera i dati necessari per il grafico Pareto dai dati corretti nel foglio Searches
                 selfies_count = 0
@@ -173,7 +173,7 @@ if uploaded_file:
                 # complete_packages = len(confirmed[confirmed['amount'] > 50])  # esempio di soglia
                 
                 # Dati per il grafico Pareto
-                categories = ['Selfie', 'Utenti Unici', 'Utenti al Carrello', 'Acquisti', 'Pacchetti Completi']
+                categories = ['Selfie', 'Utenti unici', 'Utenti al carrello', 'Acquisti', 'Pacchetti completi']
                 values = [selfies_count, unique_users, cart_users_count, purchases_count, complete_packages]
                 
                 # Calcola la percentuale cumulativa
@@ -203,7 +203,7 @@ if uploaded_file:
                 
                 # Layout
                 fig_pareto.update_layout(
-                    title="Analisi Pareto",
+                    title="Analisi pareto",
                     xaxis=dict(title='Categoria'),
                     yaxis=dict(title='Conteggio', side='left'),
                     yaxis2=dict(
@@ -222,7 +222,7 @@ if uploaded_file:
                 st.plotly_chart(fig_pareto, use_container_width=True)
             
             with col2:
-                st.markdown("### 📌 Metriche Chiave")
+                st.markdown("### 📌 Metriche chiave")
                 
                 # Calcola il tasso di conversione usando i dati corretti dal foglio Searches
                 conversion_rate = (purchases_count / unique_users * 100) if unique_users > 0 else 0
@@ -236,8 +236,8 @@ if uploaded_file:
                     st.metric("# Pacchetti", f"{complete_packages}")
                 
                 with metric_col2:
-                    st.metric("Conversion Rate", f"{conversion_rate:.2f}%")
-                    st.metric("Utenti Unici", f"{unique_users}")
+                    st.metric("Conversion rate", f"{conversion_rate:.2f}%")
+                    st.metric("Utenti unici", f"{unique_users}")
                 
                 # Un po' di spaziatura
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -249,10 +249,10 @@ if uploaded_file:
                 metric_col3, metric_col4 = st.columns(2)
                 
                 with metric_col3:
-                    st.metric("Spesa Media", f"{avg_amount:.2f}€")
+                    st.metric("Spesa media", f"{avg_amount:.2f}€")
                 
                 with metric_col4:
-                    st.metric("Valore Utente", f"{user_value:.2f}€")
+                    st.metric("Valore utente", f"{user_value:.2f}€")
             
             # Spaziatura
             st.markdown("<br>", unsafe_allow_html=True)
@@ -261,7 +261,7 @@ if uploaded_file:
             col3, col4 = st.columns([1, 1])
             
             with col3:
-                st.markdown("### 📈 Analisi per Evento")
+                st.markdown("### 📈 Analisi per evento")
 
                 title_col, select_col = st.columns([0.5, 0.5])
                 with title_col:
@@ -269,25 +269,33 @@ if uploaded_file:
                 with select_col:
                     metric_choice = st.selectbox(
                         "",
-                        ["Spesa Media", "Valore Utente"],
+                        ["Spesa media", "Valore utente", "Incasso totale"],
                         index=0,        
                         label_visibility="collapsed"
                     )
             
-                if metric_choice == "Spesa Media":
+                if metric_choice == "Spesa media":
                     metric_df = confirmed.groupby('eventName')['amount'].mean().reset_index()
                     metric_df.columns = ['eventName', 'value']
                     y_label = "Spesa Media (€)"
-                    title = "Media Ordini Confermati per Evento"
-                else:
-                    # Valore Utente: totale incassato per evento / utenti unici per evento
-                    event_totals = confirmed.groupby('eventName')['amount'].sum().reset_index()
-                    event_users = df_searches_filtered.groupby('eventName')['unique_users_count'].sum().reset_index()
-                    metric_df = pd.merge(event_totals, event_users, on='eventName', how='left')
-                    metric_df['value'] = metric_df['amount'] / metric_df['unique_users_count']
-                    metric_df = metric_df[['eventName', 'value']]
-                    y_label = "Valore Utente (€)"
-                    title = "Valore Utente per Evento"
+                    title = "Media ordini confermati per evento"
+                elif selected_metric == "Valore utente":
+                    event_totals = confirmed.groupby('eventName').agg({
+                        'amount': 'sum',
+                        'userId': pd.Series.nunique
+                    }).reset_index()
+                    event_totals['user_value'] = event_totals['amount'] / event_totals['userId']
+                    avg_by_event = event_totals[['eventName', 'user_value']]
+                    y_value = 'user_value'
+                    y_label = 'Valore Utente (€)'
+                    title = "Valore utente medio per evento"
+            
+                else:  # Incasso Totale
+                    total_by_event = confirmed.groupby('eventName')['amount'].sum().reset_index()
+                    avg_by_event = total_by_event
+                    y_value = 'amount'
+                    y_label = 'Incasso totale (€)'
+                    title = "Incasso totale per evento"
             
                 fig_avg = px.bar(
                     metric_df,
@@ -303,7 +311,7 @@ if uploaded_file:
                 st.plotly_chart(fig_avg, use_container_width=True)
 
             with col4:
-                st.markdown("### 🍰 Distribuzione Acquisti per Prezzo")
+                st.markdown("### 🍰 Distribuzione acquisti per prezzo")
                 
                 # Crea fasce di prezzo
                 bins = [0, 10, 20, 30, 40, 50, float('inf')]
@@ -318,7 +326,7 @@ if uploaded_file:
                     price_distribution,
                     names='price_range',
                     values='count',
-                    title="Distribuzione Acquisti per Fasce di Prezzo",
+                    title="Distribuzione acquisti per fasce di prezzo",
                     color_discrete_sequence=px.colors.qualitative.Pastel
                 )
                 
@@ -326,7 +334,7 @@ if uploaded_file:
                     font=dict(family="Arial, sans-serif", size=12),
                     title_font=dict(size=16),
                     title_x=0.5,
-                    legend_title="Fascia di Prezzo"
+                    legend_title="Fascia di prezzo"
                 )
                 
                 fig_pie.update_traces(
@@ -338,7 +346,7 @@ if uploaded_file:
                 st.plotly_chart(fig_pie, use_container_width=True)
             
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### 📋 Dettaglio Ordini Confermati")
+            st.markdown("### 📋 Dettaglio ordini confermati")
             st.dataframe(
                 confirmed.drop(columns=['paymentResult','dateSaveUrl','userId','datePayment','price_range',"hashId",
                                         "note","paymentId"], errors='ignore'),
