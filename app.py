@@ -261,13 +261,18 @@ if uploaded_file:
             col3, col4 = st.columns([1, 1])
             
             with col3:
-                st.markdown("### 📈 Analisi per Evento")
-            
-                # Selettore per la metrica
-                metrica = st.selectbox(
-                    "Seleziona la metrica da visualizzare",
-                    options=["Spesa Media (€)", "Valore Utente (€)"]
-                )
+                # Layout orizzontale compatto per titolo + selectbox
+                col3a, col3b = st.columns([0.7, 0.3])
+                
+                with col3a:
+                    st.markdown("### 📈 Spesa per Evento")
+                with col3b:
+                    metrica = st.selectbox(
+                        "",  # Nessuna etichetta per mantenerla compatta
+                        options=["Spesa Media (€)", "Valore Utente (€)"],
+                        index=0,
+                        label_visibility="collapsed"
+                    )
             
                 if metrica == "Spesa Media (€)":
                     df_plot = confirmed.groupby('eventName')['amount'].mean().reset_index()
@@ -275,17 +280,18 @@ if uploaded_file:
                     titolo = "Media Ordini Confermati per Evento"
                     etichetta_y = "Spesa Media (€)"
                 else:
-                    # Calcolo del Valore Utente per evento: somma / utenti unici
+                    # Calcolo valore utente per evento = somma / utenti unici
                     total_amount_per_event = confirmed.groupby('eventName')['amount'].sum()
                     unique_users_per_event = confirmed.groupby('eventName')['userId'].nunique()
                     user_value_per_event = (total_amount_per_event / unique_users_per_event).reset_index()
                     user_value_per_event.columns = ['eventName', 'user_value']
-            
+                    
                     df_plot = user_value_per_event
                     y_val = 'user_value'
                     titolo = "Valore Utente per Evento"
                     etichetta_y = "Valore Utente (€)"
             
+                # Plot
                 fig_avg = px.bar(
                     df_plot,
                     x='eventName',
