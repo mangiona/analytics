@@ -263,7 +263,7 @@ if uploaded_file:
             with col3:
                 st.markdown("### 📈 Analisi per Evento")
 
-                title_col, select_col = st.columns([0.7, 0.3])
+                title_col, select_col = st.columns([0.5, 0.5])
                 with title_col:
                     st.markdown("#### Metrica")
                 with select_col:
