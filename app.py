@@ -263,41 +263,38 @@ if uploaded_file:
             with col3:
                 st.markdown("### 📈 Analisi per Evento")
             
-                # Selettore per la metrica da visualizzare
-                selected_metric = st.selectbox(
-                    "Seleziona metrica da visualizzare:",
+                # Aggiungi il selettore per la metrica
+                metric_to_plot = st.selectbox(
+                    "Seleziona la metrica da visualizzare:",
                     options=["Spesa Media", "Valore Utente"]
                 )
             
-                if selected_metric == "Spesa Media":
+                if metric_to_plot == "Spesa Media":
                     avg_by_event = confirmed.groupby('eventName')['amount'].mean().reset_index()
-                    y_value = 'amount'
-                    y_label = 'Spesa Media (€)'
+                    y_col = 'amount'
                     title = "Media Ordini Confermati per Evento"
+                    y_label = "Spesa Media (€)"
                 else:
-                    # Calcolo del valore utente medio per evento
-                    event_totals = confirmed.groupby('eventName').agg({
-                        'amount': 'sum',
-                        'userId': pd.Series.nunique
-                    }).reset_index()
-                    event_totals['user_value'] = event_totals['amount'] / event_totals['userId']
-                    avg_by_event = event_totals[['eventName', 'user_value']]
-                    y_value = 'user_value'
-                    y_label = 'Valore Utente (€)'
-                    title = "Valore Utente Medio per Evento"
+                    avg_by_event = confirmed.groupby('eventName').apply(
+                        lambda x: x['amount'].sum() / x['unique_users_count'].sum() if x['unique_users_count'].sum() > 0 else 0
+                    ).reset_index(name='user_value')
+                    y_col = 'user_value'
+                    title = "Valore Utente per Evento"
+                    y_label = "Valore Utente (€)"
             
                 fig_avg = px.bar(
                     avg_by_event,
                     x='eventName',
-                    y=y_value,
+                    y=y_col,
                     title=title,
                     labels={
                         'eventName': 'Evento',
-                        y_value: y_label
+                        y_col: y_label
                     },
                     color='eventName'
                 )
                 st.plotly_chart(fig_avg, use_container_width=True)
+
 
             with col4:
                 st.markdown("### 🍰 Distribuzione Acquisti per Prezzo")
