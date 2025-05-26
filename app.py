@@ -262,30 +262,32 @@ if uploaded_file:
             
             with col3:
                 st.markdown("### 📈 Analisi per Evento")
-                
-                # Selettore per la metrica da visualizzare
-                metric_to_plot = st.selectbox("Seleziona la metrica da visualizzare:", ["Spesa Media", "Valore Utente"])
-                
-                # Calcolo dei dati in base alla selezione
-                if metric_to_plot == "Spesa Media":
-                    data_plot = confirmed.groupby('eventName')['amount'].mean().reset_index()
-                    y_value = 'amount'
-                    title = "Media Ordini Confermati per Evento"
-                    y_label = "Spesa Media (€)"
-                else:  # Valore Utente
-                    # Calcolo del valore utente per evento
-                    user_value_by_event = confirmed.groupby('eventName').apply(
-                        lambda df: df['amount'].sum() / df['user_id'].nunique() if df['user_id'].nunique() > 0 else 0
-                    ).reset_index(name='user_value')
-                    
-                    data_plot = user_value_by_event
-                    y_value = 'user_value'
-                    title = "Valore Utente per Evento"
-                    y_label = "Valore Utente (€)"
             
-                # Grafico dinamico
-                fig_event = px.bar(
-                    data_plot,
+                # Selettore per la metrica da visualizzare
+                selected_metric = st.selectbox(
+                    "Seleziona metrica da visualizzare:",
+                    options=["Spesa Media", "Valore Utente"]
+                )
+            
+                if selected_metric == "Spesa Media":
+                    avg_by_event = confirmed.groupby('eventName')['amount'].mean().reset_index()
+                    y_value = 'amount'
+                    y_label = 'Spesa Media (€)'
+                    title = "Media Ordini Confermati per Evento"
+                else:
+                    # Calcolo del valore utente medio per evento
+                    event_totals = confirmed.groupby('eventName').agg({
+                        'amount': 'sum',
+                        'userId': pd.Series.nunique
+                    }).reset_index()
+                    event_totals['user_value'] = event_totals['amount'] / event_totals['userId']
+                    avg_by_event = event_totals[['eventName', 'user_value']]
+                    y_value = 'user_value'
+                    y_label = 'Valore Utente (€)'
+                    title = "Valore Utente Medio per Evento"
+            
+                fig_avg = px.bar(
+                    avg_by_event,
                     x='eventName',
                     y=y_value,
                     title=title,
@@ -295,9 +297,7 @@ if uploaded_file:
                     },
                     color='eventName'
                 )
-                
-                st.plotly_chart(fig_event, use_container_width=True)
-
+                st.plotly_chart(fig_avg, use_container_width=True)
 
             with col4:
                 st.markdown("### 🍰 Distribuzione Acquisti per Prezzo")
