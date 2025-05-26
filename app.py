@@ -288,10 +288,9 @@ if uploaded_file:
                     y_label = "Valore Utente (€)"
                     title = "Valore Utente per Evento"
                 else:  # Incasso Totale
-                    total_by_event = confirmed.groupby('eventName')['amount'].sum().reset_index()
-                    avg_by_event = total_by_event
-                    y_value = 'amount'
-                    y_label = 'Incasso totale (€)'
+                    metric_df = confirmed.groupby('eventName')['amount'].sum().reset_index()
+                    metric_df.columns = ['eventName', 'value']
+                    y_label = "Incasso totale (€)"
                     title = "Incasso totale per evento"
             
                 fig_avg = px.bar(
