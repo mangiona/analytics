@@ -16,7 +16,8 @@ event_names = {
     13: "Triathlon Caorle",
     14: "GF Squali",
     15: "Nove Colli",
-    16: "Oceanman Cattolica"
+    16: "Oceanman Cattolica",
+    18: "Ironlake"
 }
 
 st.sidebar.header("🔍 Filtro dati")
