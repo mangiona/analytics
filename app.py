@@ -18,6 +18,8 @@ event_names = {
     15: "Nove Colli",
     16: "Oceanman Cattolica",
     18: "Ironlake",
+    19: "GFVento",
+    20: "Bardolino",
     21: "WMF"
 }
 
