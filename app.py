@@ -17,7 +17,8 @@ event_names = {
     14: "GF Squali",
     15: "Nove Colli",
     16: "Oceanman Cattolica",
-    18: "Ironlake"
+    18: "Ironlake",
+    21: "WMF"
 }
 
 st.sidebar.header("🔍 Filtro dati")
