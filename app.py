@@ -20,7 +20,9 @@ event_names = {
     18: "Ironlake",
     19: "GFVento",
     20: "Bardolino",
-    21: "WMF"
+    21: "WMF",
+    22: "OceanmanOrta",
+    23: "Varano"
 }
 
 st.sidebar.header("🔍 Filtro dati")
