@@ -317,7 +317,7 @@ if uploaded_file:
                 
                 # Crea fasce di prezzo
                 bins = [0, 10, 20, 30, 40, 50, float('inf')]
-                labels = ['0-10€', '11-20€', '21-30€', '31-40€', '41-50€', '>50€']
+                labels = ['0-10€', '10-20€', '20-30€', '30-40€', '40-50€', '>50€']
                 
                 confirmed['price_range'] = pd.cut(confirmed['amount'], bins=bins, labels=labels)
                 
